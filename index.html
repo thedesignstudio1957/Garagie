@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garagie</title>
+    <title data-i18n-key="title">Garagie</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Configure Tailwind to use Inter font and stop-sign colors (Red/White/Black) -->
@@ -39,27 +39,39 @@
             background-position: right 0.75rem center;
             background-size: 1.5em 1.5em;
         }
+
+        /* RTL adjustments for the select arrow icon position */
+        html[dir="rtl"] #type-filter {
+            background-position: left 0.75rem center;
+            padding-right: 0.75rem; /* Ensure padding reverses */
+            padding-left: 3rem; /* Compensate for the icon position */
+        }
     </style>
 </head>
 <body class="min-h-screen">
 
     <div id="app" class="max-w-4xl mx-auto p-4 md:p-8">
         <!-- Header -->
-        <header class="text-center mb-8">
+        <header class="text-center mb-8 relative">
+            <!-- Language Switcher -->
+            <button id="lang-switcher" class="absolute top-0 right-0 md:left-0 md:right-auto bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded-full text-sm transition shadow-md">
+                AR / EN
+            </button>
+            
             <!-- Updated H1 to GARAGIE -->
-            <h1 class="text-5xl font-extrabold text-primary uppercase tracking-wider">GARAGIE</h1>
-            <p class="text-lg text-gray-700 mt-2 font-semibold">Find Your Spot, Fast.</p>
+            <h1 data-i18n-key="title" class="text-5xl font-extrabold text-primary uppercase tracking-wider">GARAGIE</h1>
+            <p data-i18n-key="subtitle" class="text-lg text-gray-700 mt-2 font-semibold">Find Your Spot, Fast.</p>
         </header>
 
         <!-- Loading & Auth State -->
         <div id="loading-indicator" class="text-center p-6 bg-red-100 text-primary rounded-xl mb-6 hidden">
-            <p class="font-semibold">Connecting to the network...</p>
+            <p data-i18n-key="loading" class="font-semibold">Connecting to the network...</p>
         </div>
         <div id="auth-info" class="text-center text-sm text-gray-500 mb-4"></div>
 
         <!-- Post Creation Form -->
         <div class="bg-card shadow-xl rounded-xl p-6 mb-8 border-t-8 border-primary">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">CREATE NEW LISTING</h2>
+            <h2 data-i18n-key="create_header" class="text-2xl font-bold mb-4 text-gray-700">CREATE NEW LISTING</h2>
             <form id="post-form" class="space-y-4">
                 
                 <!-- Type Selection - High Contrast Stop Sign Style -->
@@ -67,29 +79,29 @@
                     <!-- OFFER: Primary Red (Dominant) with White text -->
                     <label class="flex items-center space-x-2 bg-primary p-3 rounded-lg border-2 border-primary flex-1 cursor-pointer hover:bg-red-700 transition shadow-lg">
                         <input type="radio" name="type" value="offer" required class="form-radio text-white focus:ring-white" checked>
-                        <span class="font-extrabold text-white uppercase text-base">I have a spot to **OFFER**</span>
+                        <span data-i18n-key="offer_label" class="font-extrabold text-white uppercase text-base">I have a spot to **OFFER**</span>
                     </label>
                     <!-- REQUEST: Secondary Dark Gray with White text -->
                     <label class="flex items-center space-x-2 bg-secondary p-3 rounded-lg border-2 border-secondary flex-1 cursor-pointer hover:bg-gray-700 transition shadow-lg">
                         <input type="radio" name="type" value="request" required class="form-radio text-white focus:ring-white">
-                        <span class="font-extrabold text-white uppercase text-base">I **NEED** a parking spot</span>
+                        <span data-i18n-key="request_label" class="font-extrabold text-white uppercase text-base">I **NEED** a parking spot</span>
                     </label>
                 </div>
 
                 <!-- Location -->
                 <div>
-                    <label for="location" class="block text-sm font-bold text-gray-700 mb-1">LOCATION:</label>
+                    <label data-i18n-key="location_label" for="location" class="block text-sm font-bold text-gray-700 mb-1">LOCATION:</label>
                     <input type="text" id="location" placeholder="Be specific for searchability" required class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-primary focus:border-primary transition" maxlength="100">
                 </div>
 
                 <!-- Details -->
                 <div>
-                    <label for="details" class="block text-sm font-bold text-gray-700 mb-1">DETAILS (Time, Price, Specifics):</label>
+                    <label data-i18n-key="details_label" for="details" class="block text-sm font-bold text-gray-700 mb-1">DETAILS (Time, Price, Specifics):</label>
                     <textarea id="details" rows="3" placeholder="Available 8 AM - 5 PM on weekdays. Small SUV size. Contact with an offer." required class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-primary focus:border-primary transition"></textarea>
                 </div>
 
                 <!-- Button uses the new primary color (Red) and is extremely bold -->
-                <button type="submit" class="w-full bg-primary hover:bg-red-700 text-white font-extrabold uppercase text-lg py-4 px-4 rounded-lg transition duration-200 shadow-xl tracking-wider">
+                <button data-i18n-key="post_button" type="submit" class="w-full bg-primary hover:bg-red-700 text-white font-extrabold uppercase text-lg py-4 px-4 rounded-lg transition duration-200 shadow-xl tracking-wider">
                     POST NOW
                 </button>
             </form>
@@ -98,7 +110,7 @@
         <!-- Filter & Search Controls -->
         <div class="bg-card shadow-lg rounded-xl p-4 mb-8 border border-gray-200 flex flex-col md:flex-row gap-4 items-center">
             <div class="flex-1 w-full md:w-auto">
-                <label for="search-input" class="sr-only">Search Location</label>
+                <label for="search-input" class="sr-only" data-i18n-key="search_placeholder"></label>
                 <div class="relative">
                     <!-- Search Icon (Magnifying Glass) -->
                     <svg class="w-5 h-5 text-gray-600 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -107,22 +119,22 @@
             </div>
             
             <div class="flex-shrink-0 w-full md:w-auto">
-                <label for="type-filter" class="sr-only">Filter by Type</label>
+                <label for="type-filter" class="sr-only"></label>
                 <select id="type-filter" class="w-full p-3 border border-gray-400 rounded-lg bg-white focus:ring-primary focus:border-primary appearance-none font-semibold">
-                    <option value="all" class="font-semibold">SHOW ALL LISTINGS</option>
-                    <option value="offer" class="font-semibold">ONLY PARKING OFFERS</option>
-                    <option value="request" class="font-semibold">ONLY PARKING REQUESTS</option>
+                    <option value="all" data-i18n-key="show_all_listings">SHOW ALL LISTINGS</option>
+                    <option value="offer" data-i18n-key="only_offers">ONLY PARKING OFFERS</option>
+                    <option value="request" data-i18n-key="only_requests">ONLY PARKING REQUESTS</option>
                 </select>
             </div>
         </div>
 
         <!-- Posts List -->
         <div class="space-y-6">
-            <h2 class="text-2xl font-bold text-gray-700">ALL POSTS</h2>
+            <h2 data-i18n-key="all_posts_header" class="text-2xl font-bold text-gray-700">ALL POSTS</h2>
             <div id="posts-container" class="space-y-6">
                 <!-- Posts will be injected here -->
             </div>
-            <p id="no-posts" class="text-center text-gray-500 p-8 border border-dashed rounded-xl bg-white hidden">NO LISTINGS AVAILABLE YET. BE THE FIRST TO POST!</p>
+            <p data-i18n-key="no_posts" id="no-posts" class="text-center text-gray-500 p-8 border border-dashed rounded-xl bg-white hidden">NO LISTINGS AVAILABLE YET. BE THE FIRST TO POST!</p>
         </div>
 
     </div>
@@ -149,7 +161,67 @@
         let allPosts = [];
         let currentFilter = 'all'; // 'all', 'offer', or 'request'
         let currentSearchTerm = '';
+        let currentLang = 'en'; // Default language
 
+        // --- TRANSLATION OBJECT ---
+        const translations = {
+            'en': {
+                'title': 'GARAGIE',
+                'subtitle': 'Find Your Spot, Fast.',
+                'loading': 'Connecting to the network...',
+                'auth_info_prefix': 'YOUR USER ID:',
+                'auth_info_suffix': '(Use this exact ID when someone asks you to connect for a spot!)',
+                'create_header': 'CREATE NEW LISTING',
+                'offer_label': 'I have a spot to **OFFER**',
+                'request_label': 'I **NEED** a parking spot',
+                'location_label': 'LOCATION:',
+                'location_placeholder': 'Be specific for searchability',
+                'details_label': 'DETAILS (Time, Price, Specifics):',
+                'details_placeholder': 'Available 8 AM - 5 PM on weekdays. Small SUV size. Contact with an offer.',
+                'post_button': 'POST NOW',
+                'search_placeholder': 'SEARCH LOCATION',
+                'show_all_listings': 'SHOW ALL LISTINGS',
+                'only_offers': 'ONLY PARKING OFFERS',
+                'only_requests': 'ONLY PARKING REQUESTS',
+                'all_posts_header': 'ALL POSTS',
+                'no_posts': 'NO LISTINGS AVAILABLE YET. BE THE FIRST TO POST!',
+                'poster_id': 'POSTER ID:',
+                'comments_header': 'Comments',
+                'comment_placeholder': 'Add a comment...',
+                'send_button': 'Send',
+                'delete_ad_button': 'DELETE AD',
+                'post_type_offer': 'PARKING OFFER',
+                'post_type_request': 'PARKING REQUEST',
+            },
+            'ar': {
+                'title': 'جراجي', 
+                'subtitle': 'ابحث عن مكانك بسرعة.', 
+                'loading': 'جاري الاتصال بالشبكة...', 
+                'auth_info_prefix': 'رقم تعريف المستخدم الخاص بك:', 
+                'auth_info_suffix': '(استخدم هذا المعرف بالضبط عندما يطلب منك شخص ما التواصل بشأن موقف!)', 
+                'create_header': 'إنشاء إعلان جديد', 
+                'offer_label': 'لدي موقف **متاح**', 
+                'request_label': 'أنا **أحتاج** إلى موقف', 
+                'location_label': 'الموقع:', 
+                'location_placeholder': 'كن محددًا لسهولة البحث', 
+                'details_label': 'التفاصيل (الوقت، السعر، المواصفات):', 
+                'details_placeholder': 'متاح من 8 صباحًا حتى 5 مساءً في أيام الأسبوع. حجم سيارة دفع رباعي صغيرة. تواصل لتقديم عرض.', 
+                'post_button': 'نشر الآن', 
+                'search_placeholder': 'البحث عن موقع', 
+                'show_all_listings': 'عرض جميع الإعلانات', 
+                'only_offers': 'عروض المواقف فقط', 
+                'only_requests': 'طلبات المواقف فقط', 
+                'all_posts_header': 'جميع الإعلانات', 
+                'no_posts': 'لا توجد إعلانات متاحة بعد. كن أول من ينشر!', 
+                'poster_id': 'معرف الناشر:', 
+                'comments_header': 'التعليقات', 
+                'comment_placeholder': 'أضف تعليقًا...', 
+                'send_button': 'إرسال', 
+                'delete_ad_button': 'حذف الإعلان', 
+                'post_type_offer': 'عرض موقف', 
+                'post_type_request': 'طلب موقف', 
+            }
+        };
 
         const loadingIndicator = document.getElementById('loading-indicator');
         const authInfo = document.getElementById('auth-info');
@@ -158,12 +230,67 @@
         const noPostsMessage = document.getElementById('no-posts');
         const typeFilter = document.getElementById('type-filter');
         const searchInput = document.getElementById('search-input');
+        const langSwitcher = document.getElementById('lang-switcher');
 
 
         // Helper function for UI updates
         const showLoading = (show) => {
             loadingIndicator.classList.toggle('hidden', !show);
             document.getElementById('post-form').classList.toggle('opacity-50', show);
+        };
+
+        /**
+         * Switches the application language and RTL/LTR direction.
+         * @param {string} lang - 'en' or 'ar'.
+         */
+        const switchLanguage = (lang) => {
+            currentLang = lang;
+            const t = translations[lang];
+            const isArabic = lang === 'ar';
+
+            // 1. Update Directionality and Language Attribute
+            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+            
+            // Update the switcher text
+            langSwitcher.textContent = isArabic ? 'EN / AR' : 'AR / EN';
+
+
+            // 2. Update Static Text (using data-i18n-key)
+            document.querySelectorAll('[data-i18n-key]').forEach(el => {
+                const key = el.getAttribute('data-i18n-key');
+                let text = t[key] || el.textContent;
+
+                // Special handling for labels that contain bold markdown
+                if ((key.includes('_label') || key === 'title') && text.includes('**')) {
+                    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    el.innerHTML = text;
+                } else if (key === 'title') {
+                    // Update the title element text and the document title tag
+                    document.title = text;
+                    el.textContent = text;
+                } else {
+                    el.textContent = text;
+                }
+            });
+
+            // 3. Update Placeholders
+            document.getElementById('location').placeholder = t['location_placeholder'];
+            document.getElementById('details').placeholder = t['details_placeholder'];
+            document.getElementById('search-input').placeholder = t['search_placeholder'];
+            // Update any comment input placeholder if it exists on the page
+            document.querySelectorAll('.comment-input').forEach(input => {
+                input.placeholder = t['comment_placeholder'];
+            });
+
+
+            // 4. Update Auth Info (special case)
+            if (userId) {
+                authInfo.textContent = `${t['auth_info_prefix']} ${userId} ${t['auth_info_suffix']}`;
+            }
+
+            // 5. Rerender Posts (to update dynamic texts like badges and buttons)
+            filterAndRenderPosts();
         };
 
         // --- 1. FIREBASE INITIALIZATION AND AUTHENTICATION ---
@@ -184,10 +311,12 @@
                 onAuthStateChanged(auth, (user) => {
                     userId = user ? user.uid : crypto.randomUUID(); // Fallback to random ID if auth somehow fails
                     isAuthReady = true;
-                    // Show full userId so people can communicate specific spots with the poster
-                    authInfo.textContent = `YOUR USER ID: ${userId} (Use this exact ID when someone asks you to connect for a spot!)`;
-                    showLoading(false);
                     console.log("Firebase Auth Ready. User ID:", userId);
+                    
+                    // Initial language setup after getting user ID
+                    switchLanguage(currentLang); 
+                    
+                    showLoading(false);
                     if (db) {
                         listenForPosts(db);
                         setupFilterListeners();
@@ -238,6 +367,9 @@
         const renderPosts = (posts) => {
             postsContainer.innerHTML = '';
             
+            // Get current language translations
+            const t = translations[currentLang];
+
             if (posts.length === 0) {
                 noPostsMessage.classList.remove('hidden');
             } else {
@@ -249,7 +381,15 @@
                 // Stop-Sign Style: White card with thick left border and bold badge
                 const cardColor = 'bg-card border-l-8';
                 const borderColor = isOffer ? 'border-primary' : 'border-secondary';
-                const typeText = isOffer ? 'PARKING OFFER' : 'PARKING REQUEST';
+                
+                // Dynamic translated texts
+                const typeText = isOffer ? t['post_type_offer'] : t['post_type_request'];
+                const deleteAdButtonText = t['delete_ad_button'];
+                const posterIdLabel = t['poster_id'];
+                const commentsHeader = t['comments_header'];
+                const sendButtonText = t['send_button'];
+
+
                 const typeBadgeBg = isOffer ? 'bg-primary' : 'bg-secondary';
                 
                 const postElement = document.createElement('div');
@@ -260,12 +400,12 @@
                     .sort((a, b) => a.timestamp.seconds - b.timestamp.seconds)
                     .map((comment, index) => `
                         <div class="p-2 bg-gray-200 rounded-lg text-sm flex justify-between items-start">
-                            <div>
-                                <span class="font-bold text-gray-800 break-all">${comment.userId.substring(0, 8)}:</span>
+                            <div class="flex-1 min-w-0">
+                                <span class="font-bold text-gray-800 break-all">${comment.userId}:</span>
                                 <span class="text-gray-700">${comment.text}</span>
                             </div>
                             ${comment.userId === userId ? `
-                                <button class="delete-comment-btn text-red-500 hover:text-red-700 ml-2 leading-none flex-shrink-0" data-post-id="${post.id}" data-comment-index="${index}">
+                                <button class="delete-comment-btn text-red-500 hover:text-red-700 ml-2 leading-none flex-shrink-0" data-post-id="${post.id}" data-comment-index="${index}" style="${currentLang === 'ar' ? 'margin-right: 0.5rem;' : 'margin-left: 0.5rem;'}">
                                     <!-- SVG Trash Icon -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m-5 0h12" />
@@ -283,10 +423,10 @@
                             ${typeText}
                         </span>
                         <div class="flex items-center space-x-3">
-                            <span class="text-sm text-gray-500">${new Date(post.timestamp.seconds * 1000).toLocaleDateString()}</span>
+                            <span class="text-sm text-gray-500">${new Date(post.timestamp.seconds * 1000).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')}</span>
                             <!-- Delete Ad Button (only visible to the post creator) -->
                             ${post.userId === userId ? `
-                                <button class="delete-post-btn text-xs font-bold text-white bg-red-500 hover:bg-red-700 p-1 px-2 rounded-lg transition" data-post-id="${post.id}">DELETE AD</button>
+                                <button class="delete-post-btn text-xs font-bold text-white bg-red-500 hover:bg-red-700 p-1 px-2 rounded-lg transition" data-post-id="${post.id}">${deleteAdButtonText}</button>
                             ` : ''}
                         </div>
                     </div>
@@ -294,22 +434,22 @@
                     <h3 class="text-2xl font-extrabold text-gray-800 mb-2 uppercase">${post.location}</h3>
                     <p class="text-gray-600 mb-4 whitespace-pre-wrap">${post.details}</p>
                     <div class="text-sm text-gray-500 border-t border-gray-200 pt-3">
-                        POSTER ID: <span class="font-mono text-gray-800 font-semibold break-all">${post.userId}</span>
+                        ${posterIdLabel} <span class="font-mono text-gray-800 font-semibold break-all">${post.userId}</span>
                     </div>
 
                     <!-- Comments Section -->
                     <div class="mt-4 pt-4 border-t border-gray-200">
-                        <h4 class="font-semibold text-gray-700 mb-3 uppercase">Comments (${(post.comments || []).length})</h4>
+                        <h4 class="font-semibold text-gray-700 mb-3 uppercase">${commentsHeader} (${(post.comments || []).length})</h4>
                         <div class="space-y-2 max-h-40 overflow-y-auto pr-2">
                             ${commentsHtml}
                         </div>
                         
                         <!-- Comment Form -->
                         <form class="comment-form mt-3 flex space-x-2" data-post-id="${post.id}">
-                            <input type="text" placeholder="Add a comment..." required class="comment-input flex-grow p-2 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary">
+                            <input type="text" placeholder="${t['comment_placeholder']}" required class="comment-input flex-grow p-2 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary">
                             <!-- Button uses secondary color (dark gray) for comment submission -->
                             <button type="submit" class="bg-secondary hover:bg-gray-900 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 uppercase font-bold">
-                                Send
+                                ${sendButtonText}
                             </button>
                         </form>
                     </div>
@@ -336,71 +476,16 @@
             // 3. Attach listeners for comment deletion buttons
             document.querySelectorAll('.delete-comment-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const postId = e.target.getAttribute('data-post-id');
+                    // Find the closest element with the post ID, handles the SVG being the target
+                    const postId = e.currentTarget.getAttribute('data-post-id');
                     const commentIndex = parseInt(e.currentTarget.getAttribute('data-comment-index'));
                     deleteComment(postId, commentIndex);
                 });
             });
         };
         
-        // --- 3. DELETION LOGIC FUNCTIONS ---
-
-        /**
-         * Deletes a specific parking post document from Firestore.
-         */
-        const deletePost = async (postId) => {
-            if (!isAuthReady || !userId) return;
-
-            showLoading(true);
-            try {
-                const postRef = doc(db, getCollectionPath(), postId);
-                await deleteDoc(postRef);
-                console.log(`Post ${postId} deleted by user ${userId}.`);
-            } catch (error) {
-                console.error("Error deleting post:", error);
-            } finally {
-                showLoading(false);
-            }
-        };
-
-        /**
-         * Deletes a specific comment from a post's comments array by filtering the array.
-         */
-        const deleteComment = async (postId, commentIndex) => {
-            if (!isAuthReady || !userId) return;
-
-            showLoading(true);
-            try {
-                // Find the post from the globally synced list to get the current comment array
-                const post = allPosts.find(p => p.id === postId);
-                if (!post || !post.comments || post.comments.length <= commentIndex) {
-                    console.error("Post or comment not found for deletion.");
-                    showLoading(false);
-                    return;
-                }
-
-                // Filter the comments array, excluding the comment at the specified index
-                const newComments = post.comments.filter((_, index) => index !== commentIndex);
-                
-                // Update the document in Firestore with the new, filtered comments array
-                const postRef = doc(db, getCollectionPath(), postId);
-                await updateDoc(postRef, {
-                    comments: newComments
-                });
-
-                console.log(`Comment index ${commentIndex} deleted from post ${postId} by user ${userId}.`);
-            } catch (error) {
-                console.error("Error deleting comment:", error);
-            } finally {
-                showLoading(false);
-            }
-        };
-
-
         /**
          * Listens to real-time changes in the parking_posts collection.
-         * Fetches ALL data and stores it globally, then triggers a render.
-         * @param {Firestore} db 
          */
         const listenForPosts = (db) => {
             const postsColRef = collection(db, getCollectionPath());
@@ -440,7 +525,47 @@
                 filterAndRenderPosts();
             });
         };
+        
+        // --- 3. DELETION LOGIC FUNCTIONS ---
+        const deletePost = async (postId) => {
+            if (!isAuthReady || !userId) return;
+            showLoading(true);
+            try {
+                const postRef = doc(db, getCollectionPath(), postId);
+                await deleteDoc(postRef);
+            } catch (error) {
+                console.error("Error deleting post:", error);
+            } finally {
+                showLoading(false);
+            }
+        };
 
+        const deleteComment = async (postId, commentIndex) => {
+            if (!isAuthReady || !userId) return;
+
+            showLoading(true);
+            try {
+                const post = allPosts.find(p => p.id === postId);
+                if (!post || !post.comments || post.comments.length <= commentIndex) {
+                    console.error("Post or comment not found for deletion.");
+                    showLoading(false);
+                    return;
+                }
+
+                const newComments = post.comments.filter((_, index) => index !== commentIndex);
+                
+                const postRef = doc(db, getCollectionPath(), postId);
+                await updateDoc(postRef, {
+                    comments: newComments
+                });
+            } catch (error) {
+                console.error("Error deleting comment:", error);
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // --- 4. FORM AND INTERACTION LOGIC ---
 
         /**
          * Handles the creation of a new parking post.
@@ -489,18 +614,14 @@
 
             if (!commentText) return;
 
-            // Simple object to represent a comment
             const newComment = {
                 userId: userId,
                 text: commentText,
-                // Note: serverTimestamp is only used when the array is created, 
-                // but when fetching the data, the exact object is retrieved
                 timestamp: serverTimestamp() 
             };
 
             try {
                 const postRef = doc(db, getCollectionPath(), postId);
-                // Use arrayUnion to safely add the comment to the array
                 await updateDoc(postRef, {
                     comments: arrayUnion(newComment)
                 });
@@ -510,6 +631,14 @@
                 console.error("Error adding comment:", error);
             }
         };
+
+        /**
+         * Handles the language switch button click.
+         */
+        langSwitcher.addEventListener('click', () => {
+            const newLang = currentLang === 'en' ? 'ar' : 'en';
+            switchLanguage(newLang);
+        });
         
         // --- START APPLICATION ---
         initFirebase();
