@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garagie</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind to use Inter font and stop-sign colors (Red/White/Black) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // PRIMARY: Assertive Red for Dominance (Stop Sign Red)
+                        'primary': '#dc2626', // Strong Red (Tailwind red-600)
+                        // SECONDARY: Black for high contrast on white (Stop Sign Black/Border)
+                        'secondary': '#1f2937', // Dark Gray (Tailwind gray-800)
+                        'background': '#f4f7f9', // Light Gray-Blue
+                        'card': '#ffffff',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
+        /* Style for the select arrow */
+        #type-filter {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M7 10l5 5 5-5H7z' fill='%236B7280'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div id="app" class="max-w-4xl mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <!-- Updated H1 to GARAGIE -->
+            <h1 class="text-5xl font-extrabold text-primary uppercase tracking-wider">GARAGIE</h1>
+            <p class="text-lg text-gray-700 mt-2 font-semibold">Find Your Spot, Fast.</p>
+        </header>
+
+        <!-- Loading & Auth State -->
+        <div id="loading-indicator" class="text-center p-6 bg-red-100 text-primary rounded-xl mb-6 hidden">
+            <p class="font-semibold">Connecting to the network...</p>
+        </div>
+        <div id="auth-info" class="text-center text-sm text-gray-500 mb-4"></div>
+
+        <!-- Post Creation Form -->
+        <div class="bg-card shadow-xl rounded-xl p-6 mb-8 border-t-8 border-primary">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">CREATE NEW LISTING</h2>
+            <form id="post-form" class="space-y-4">
+                
+                <!-- Type Selection - High Contrast Stop Sign Style -->
+                <div class="flex space-x-4">
+                    <!-- OFFER: Primary Red (Dominant) with White text -->
+                    <label class="flex items-center space-x-2 bg-primary p-3 rounded-lg border-2 border-primary flex-1 cursor-pointer hover:bg-red-700 transition shadow-lg">
+                        <input type="radio" name="type" value="offer" required class="form-radio text-white focus:ring-white" checked>
+                        <span class="font-extrabold text-white uppercase text-base">I have a spot to **OFFER**</span>
+                    </label>
+                    <!-- REQUEST: Secondary Dark Gray with White text -->
+                    <label class="flex items-center space-x-2 bg-secondary p-3 rounded-lg border-2 border-secondary flex-1 cursor-pointer hover:bg-gray-700 transition shadow-lg">
+                        <input type="radio" name="type" value="request" required class="form-radio text-white focus:ring-white">
+                        <span class="font-extrabold text-white uppercase text-base">I **NEED** a parking spot</span>
+                    </label>
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <label for="location" class="block text-sm font-bold text-gray-700 mb-1">LOCATION:</label>
+                    <input type="text" id="location" placeholder="Be specific for searchability" required class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-primary focus:border-primary transition" maxlength="100">
+                </div>
+
+                <!-- Details -->
+                <div>
+                    <label for="details" class="block text-sm font-bold text-gray-700 mb-1">DETAILS (Time, Price, Specifics):</label>
+                    <textarea id="details" rows="3" placeholder="Available 8 AM - 5 PM on weekdays. Small SUV size. Contact with an offer." required class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-primary focus:border-primary transition"></textarea>
+                </div>
+
+                <!-- Button uses the new primary color (Red) and is extremely bold -->
+                <button type="submit" class="w-full bg-primary hover:bg-red-700 text-white font-extrabold uppercase text-lg py-4 px-4 rounded-lg transition duration-200 shadow-xl tracking-wider">
+                    POST NOW
+                </button>
+            </form>
+        </div>
+        
+        <!-- Filter & Search Controls -->
+        <div class="bg-card shadow-lg rounded-xl p-4 mb-8 border border-gray-200 flex flex-col md:flex-row gap-4 items-center">
+            <div class="flex-1 w-full md:w-auto">
+                <label for="search-input" class="sr-only">Search Location</label>
+                <div class="relative">
+                    <!-- Search Icon (Magnifying Glass) -->
+                    <svg class="w-5 h-5 text-gray-600 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="search-input" placeholder="SEARCH LOCATION" class="w-full p-3 pl-10 border border-gray-400 rounded-lg focus:ring-primary focus:border-primary transition uppercase font-semibold">
+                </div>
+            </div>
+            
+            <div class="flex-shrink-0 w-full md:w-auto">
+                <label for="type-filter" class="sr-only">Filter by Type</label>
+                <select id="type-filter" class="w-full p-3 border border-gray-400 rounded-lg bg-white focus:ring-primary focus:border-primary appearance-none font-semibold">
+                    <option value="all" class="font-semibold">SHOW ALL LISTINGS</option>
+                    <option value="offer" class="font-semibold">ONLY PARKING OFFERS</option>
+                    <option value="request" class="font-semibold">ONLY PARKING REQUESTS</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Posts List -->
+        <div class="space-y-6">
+            <h2 class="text-2xl font-bold text-gray-700">ALL POSTS</h2>
+            <div id="posts-container" class="space-y-6">
+                <!-- Posts will be injected here -->
+            </div>
+            <p id="no-posts" class="text-center text-gray-500 p-8 border border-dashed rounded-xl bg-white hidden">NO LISTINGS AVAILABLE YET. BE THE FIRST TO POST!</p>
+        </div>
+
+    </div>
+
+    <!-- Firebase Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, addDoc, updateDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Set Firestore log level to debug for better console feedback
+        setLogLevel('Debug');
+
+        // --- GLOBAL VARIABLES (Mandatory Canvas Environment Variables) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, userId = null;
+        let isAuthReady = false;
+
+        // Global State for Filtering/Data
+        let allPosts = [];
+        let currentFilter = 'all'; // 'all', 'offer', or 'request'
+        let currentSearchTerm = '';
+
+
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const authInfo = document.getElementById('auth-info');
+        const postsContainer = document.getElementById('posts-container');
+        const postForm = document.getElementById('post-form');
+        const noPostsMessage = document.getElementById('no-posts');
+        const typeFilter = document.getElementById('type-filter');
+        const searchInput = document.getElementById('search-input');
+
+
+        // Helper function for UI updates
+        const showLoading = (show) => {
+            loadingIndicator.classList.toggle('hidden', !show);
+            document.getElementById('post-form').classList.toggle('opacity-50', show);
+        };
+
+        // --- 1. FIREBASE INITIALIZATION AND AUTHENTICATION ---
+        const initFirebase = async () => {
+            showLoading(true);
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Sign in with custom token or anonymously
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    userId = user ? user.uid : crypto.randomUUID(); // Fallback to random ID if auth somehow fails
+                    isAuthReady = true;
+                    // Show full userId so people can communicate specific spots with the poster
+                    authInfo.textContent = `YOUR USER ID: ${userId} (Use this exact ID when someone asks you to connect for a spot!)`;
+                    showLoading(false);
+                    console.log("Firebase Auth Ready. User ID:", userId);
+                    if (db) {
+                        listenForPosts(db);
+                        setupFilterListeners();
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase or signing in:", error);
+                authInfo.textContent = "Error connecting to service. Check console for details.";
+                showLoading(false);
+            }
+        };
+
+        // --- 2. FIRESTORE DATA HANDLING ---
+        
+        // Collection path for public/shared data
+        const getCollectionPath = () => {
+             // Collection path: /artifacts/{appId}/public/data/{your_collection_name}
+             return `artifacts/${appId}/public/data/parking_posts`;
+        };
+        
+        /**
+         * Applies the current filter and search term to the global post list and renders the result.
+         */
+        const filterAndRenderPosts = () => {
+            let filteredPosts = allPosts;
+            const searchTerm = currentSearchTerm.toLowerCase();
+
+            // 1. Filter by Type
+            if (currentFilter !== 'all') {
+                filteredPosts = filteredPosts.filter(post => post.type === currentFilter);
+            }
+
+            // 2. Filter by Search Term (Location)
+            if (searchTerm) {
+                filteredPosts = filteredPosts.filter(post => 
+                    post.location.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            renderPosts(filteredPosts);
+        };
+
+        /**
+         * Renders the list of posts (which are already filtered) and sets up comment listeners.
+         * @param {Array<Object>} posts - The list of posts to render (already filtered).
+         */
+        const renderPosts = (posts) => {
+            postsContainer.innerHTML = '';
+            
+            if (posts.length === 0) {
+                noPostsMessage.classList.remove('hidden');
+            } else {
+                noPostsMessage.classList.add('hidden');
+            }
+
+            posts.forEach(post => {
+                const isOffer = post.type === 'offer';
+                // Stop-Sign Style: White card with thick left border and bold badge
+                const cardColor = 'bg-card border-l-8';
+                const borderColor = isOffer ? 'border-primary' : 'border-secondary';
+                const typeText = isOffer ? 'PARKING OFFER' : 'PARKING REQUEST';
+                const typeBadgeBg = isOffer ? 'bg-primary' : 'bg-secondary';
+                
+                const postElement = document.createElement('div');
+                postElement.className = `p-5 rounded-xl shadow-xl transition-shadow hover:shadow-2xl ${cardColor} ${borderColor}`;
+                
+                const postHtml = `
+                    <div class="flex justify-between items-start mb-3">
+                        <!-- High Impact Badge - Large, bold, uppercase -->
+                        <span class="text-lg font-extrabold uppercase px-4 py-1 rounded-full text-white ${typeBadgeBg} shadow-md tracking-wider">
+                            ${typeText}
+                        </span>
+                        <span class="text-sm text-gray-500">${new Date(post.timestamp.seconds * 1000).toLocaleDateString()}</span>
+                    </div>
+                    
+                    <h3 class="text-2xl font-extrabold text-gray-800 mb-2 uppercase">${post.location}</h3>
+                    <p class="text-gray-600 mb-4 whitespace-pre-wrap">${post.details}</p>
+                    <div class="text-sm text-gray-500 border-t border-gray-200 pt-3">
+                        POSTER ID: <span class="font-mono text-gray-800 font-semibold break-all">${post.userId}</span>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <h4 class="font-semibold text-gray-700 mb-3 uppercase">Comments (${(post.comments || []).length})</h4>
+                        <div class="space-y-2 max-h-40 overflow-y-auto pr-2">
+                            ${(post.comments || []).sort((a, b) => a.timestamp.seconds - b.timestamp.seconds).map(comment => `
+                                <div class="p-2 bg-gray-200 rounded-lg text-sm">
+                                    <span class="font-bold text-gray-800 break-all">${comment.userId.substring(0, 8)}:</span>
+                                    <span class="text-gray-700">${comment.text}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- Comment Form -->
+                        <form class="comment-form mt-3 flex space-x-2" data-post-id="${post.id}">
+                            <input type="text" placeholder="Add a comment..." required class="comment-input flex-grow p-2 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary">
+                            <!-- Button uses secondary color (dark gray) for comment submission -->
+                            <button type="submit" class="bg-secondary hover:bg-gray-900 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 uppercase font-bold">
+                                Send
+                            </button>
+                        </form>
+                    </div>
+                `;
+                postElement.innerHTML = postHtml;
+                postsContainer.appendChild(postElement);
+            });
+
+            // Attach listeners to all newly rendered comment forms
+            document.querySelectorAll('.comment-form').forEach(form => {
+                form.addEventListener('submit', handleCommentSubmission);
+            });
+        };
+
+        /**
+         * Listens to real-time changes in the parking_posts collection.
+         * Fetches ALL data and stores it globally, then triggers a render.
+         * @param {Firestore} db 
+         */
+        const listenForPosts = (db) => {
+            const postsColRef = collection(db, getCollectionPath());
+            const postsQuery = query(postsColRef, orderBy('timestamp', 'desc')); // Order by latest first
+
+            onSnapshot(postsQuery, (snapshot) => {
+                allPosts = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                // Ensure comments array is initialized and clean up data inconsistencies
+                allPosts.forEach(post => {
+                    if (!Array.isArray(post.comments)) {
+                        post.comments = [];
+                    }
+                });
+                // When data changes, re-filter and re-render
+                filterAndRenderPosts(); 
+            }, (error) => {
+                console.error("Error listening to Firestore:", error);
+            });
+        };
+
+        /**
+         * Sets up event listeners for the filter dropdown and search input.
+         */
+        const setupFilterListeners = () => {
+            // Listener for filter change
+            typeFilter.addEventListener('change', (e) => {
+                currentFilter = e.target.value;
+                filterAndRenderPosts();
+            });
+
+            // Listener for search input (real-time filtering)
+            searchInput.addEventListener('input', (e) => {
+                currentSearchTerm = e.target.value;
+                filterAndRenderPosts();
+            });
+        };
+
+
+        /**
+         * Handles the creation of a new parking post.
+         */
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!isAuthReady || !userId) return;
+
+            showLoading(true);
+            
+            const type = postForm.querySelector('input[name="type"]:checked').value;
+            const location = document.getElementById('location').value.trim();
+            const details = document.getElementById('details').value.trim();
+
+            const newPost = {
+                type: type,
+                location: location,
+                details: details,
+                userId: userId,
+                timestamp: serverTimestamp(),
+                comments: [], // Initialize comments array
+            };
+
+            try {
+                const postsColRef = collection(db, getCollectionPath());
+                await addDoc(postsColRef, newPost);
+                
+                postForm.reset();
+                showLoading(false);
+            } catch (error) {
+                console.error("Error adding document:", error);
+            }
+        });
+
+        /**
+         * Handles the submission of a comment on a specific post.
+         */
+        const handleCommentSubmission = async (e) => {
+            e.preventDefault();
+            if (!isAuthReady || !userId) return;
+
+            const form = e.target;
+            const postId = form.getAttribute('data-post-id');
+            const commentInput = form.querySelector('.comment-input');
+            const commentText = commentInput.value.trim();
+
+            if (!commentText) return;
+
+            // Simple object to represent a comment
+            const newComment = {
+                userId: userId,
+                text: commentText,
+                timestamp: serverTimestamp()
+            };
+
+            try {
+                const postRef = doc(db, getCollectionPath(), postId);
+                // Use arrayUnion to safely add the comment to the array
+                await updateDoc(postRef, {
+                    comments: arrayUnion(newComment)
+                });
+
+                commentInput.value = ''; // Clear input field
+            } catch (error) {
+                console.error("Error adding comment:", error);
+            }
+        };
+        
+        // --- START APPLICATION ---
+        initFirebase();
+
+    </script>
+</body>
+</html>
