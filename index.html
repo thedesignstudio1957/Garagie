@@ -32,9 +32,10 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
+        
         /* Style for the select arrow */
         #type-filter {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M7 10l5 5 5-5H7z' fill='%236B7280'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M7 10l5 5 5-5H7z' fill='%231f2937'/%3e%3c/svg%3e"); /* Darker arrow */
             background-repeat: no-repeat;
             background-position: right 0.75rem center;
             background-size: 1.5em 1.5em;
@@ -46,6 +47,20 @@
             padding-right: 0.75rem; /* Ensure padding reverses */
             padding-left: 3rem; /* Compensate for the icon position */
         }
+        
+        /* RTL adjustments for the search icon position */
+        html[dir="ltr"] .relative > svg {
+            left: 0.75rem;
+            right: auto;
+        }
+        html[dir="rtl"] .relative > svg {
+            left: auto;
+            right: 0.75rem;
+        }
+        html[dir="rtl"] #search-input {
+            padding-left: 0.75rem; /* Ensure padding reverses */
+            padding-right: 2.5rem; /* Compensate for the icon position */
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -54,73 +69,90 @@
         <!-- Header -->
         <header class="text-center mb-8 relative">
             <!-- Language Switcher -->
-            <button id="lang-switcher" class="absolute top-0 right-0 md:left-0 md:right-auto bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded-full text-sm transition shadow-md">
+            <button id="lang-switcher" class="absolute top-0 right-0 md:left-0 md:right-auto bg-secondary hover:bg-gray-700 text-white font-extrabold py-1 px-3 rounded-full text-sm transition shadow-md uppercase tracking-wider">
                 AR / EN
             </button>
             
             <!-- Updated H1 to GARAGIE -->
             <h1 data-i18n-key="title" class="text-5xl font-extrabold text-primary uppercase tracking-wider">GARAGIE</h1>
-            <p data-i18n-key="subtitle" class="text-lg text-gray-700 mt-2 font-semibold">Find Your Spot, Fast.</p>
+            <p data-i18n-key="subtitle" class="text-lg text-secondary mt-2 font-semibold uppercase tracking-wider">Find Your Spot, Fast.</p>
         </header>
 
         <!-- Loading & Auth State -->
-        <div id="loading-indicator" class="text-center p-6 bg-red-100 text-primary rounded-xl mb-6 hidden">
-            <p data-i18n-key="loading" class="font-semibold">Connecting to the network...</p>
+        <div id="loading-indicator" class="text-center p-6 bg-red-100 text-primary rounded-xl mb-6 hidden border border-primary">
+            <p data-i18n-key="loading" class="font-semibold uppercase tracking-wider">Connecting to the network...</p>
         </div>
-        <div id="auth-info" class="text-center text-sm text-gray-500 mb-4"></div>
+        <div id="auth-info" class="text-center text-sm text-gray-500 mb-4 font-mono"></div>
+        
+        <!-- NEW: Display Name Setter - Styled with high contrast -->
+        <div id="name-setter-section" class="bg-card border-2 border-secondary p-4 rounded-xl mb-6 shadow-md">
+            <h3 data-i18n-key="display_name_label" class="text-xl font-extrabold text-primary mb-2 uppercase tracking-wider">SET YOUR DISPLAY NAME TO POST:</h3>
+            <form id="name-setter-form" class="flex flex-col md:flex-row gap-2">
+                <input type="text" id="display-name-input" data-i18n-placeholder-key="display_name_placeholder" placeholder="e.g., JEDDAHSPOTFINDER" required class="flex-grow p-3 border-2 border-secondary rounded-lg focus:ring-primary focus:border-primary transition font-bold uppercase" maxlength="30">
+                <button id="set-name-btn" data-i18n-key="set_name_button" type="submit" class="bg-secondary hover:bg-gray-700 text-white font-extrabold py-3 px-6 rounded-lg transition shadow-lg flex-shrink-0 uppercase tracking-wider">
+                    SET NAME
+                </button>
+            </form>
+            <!-- Success State Banner -->
+            <div id="current-name-display-container" class="mt-3 p-3 border-l-4 border-primary bg-red-50 hidden">
+                <p id="current-name-display" class="text-base font-extrabold text-secondary uppercase"></p>
+            </div>
+        </div>
+        <!-- End NEW: Display Name Setter -->
+
 
         <!-- Post Creation Form -->
         <div class="bg-card shadow-xl rounded-xl p-6 mb-8 border-t-8 border-primary">
-            <h2 data-i18n-key="create_header" class="text-2xl font-bold mb-4 text-gray-700">CREATE NEW LISTING</h2>
+            <h2 data-i18n-key="create_header" class="text-2xl font-extrabold mb-4 text-secondary uppercase tracking-wider">CREATE NEW LISTING</h2>
             <form id="post-form" class="space-y-4">
                 
                 <!-- Type Selection - High Contrast Stop Sign Style -->
                 <div class="flex space-x-4">
                     <!-- OFFER: Primary Red (Dominant) with White text -->
                     <label class="flex items-center space-x-2 bg-primary p-3 rounded-lg border-2 border-primary flex-1 cursor-pointer hover:bg-red-700 transition shadow-lg">
-                        <input type="radio" name="type" value="offer" required class="form-radio text-white focus:ring-white" checked>
-                        <span data-i18n-key="offer_label" class="font-extrabold text-white uppercase text-base">I have a spot to **OFFER**</span>
+                        <input type="radio" name="type" value="offer" required class="form-radio text-white focus:ring-white h-5 w-5" checked>
+                        <span data-i18n-key="offer_label" class="font-extrabold text-white uppercase text-base tracking-wide">I HAVE A SPOT TO **OFFER**</span>
                     </label>
                     <!-- REQUEST: Secondary Dark Gray with White text -->
                     <label class="flex items-center space-x-2 bg-secondary p-3 rounded-lg border-2 border-secondary flex-1 cursor-pointer hover:bg-gray-700 transition shadow-lg">
-                        <input type="radio" name="type" value="request" required class="form-radio text-white focus:ring-white">
-                        <span data-i18n-key="request_label" class="font-extrabold text-white uppercase text-base">I **NEED** a parking spot</span>
+                        <input type="radio" name="type" value="request" required class="form-radio text-white focus:ring-white h-5 w-5">
+                        <span data-i18n-key="request_label" class="font-extrabold text-white uppercase text-base tracking-wide">I **NEED** A PARKING SPOT</span>
                     </label>
                 </div>
 
                 <!-- Location -->
                 <div>
-                    <label data-i18n-key="location_label" for="location" class="block text-sm font-bold text-gray-700 mb-1">LOCATION:</label>
-                    <input type="text" id="location" placeholder="Be specific for searchability" required class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-primary focus:border-primary transition" maxlength="100">
+                    <label data-i18n-key="location_label" for="location" class="block text-sm font-extrabold text-secondary mb-1 uppercase tracking-wider">LOCATION:</label>
+                    <input type="text" id="location" placeholder="BE SPECIFIC FOR SEARCHABILITY" required class="w-full p-3 border-2 border-secondary rounded-lg focus:ring-primary focus:border-primary transition font-bold uppercase" maxlength="100">
                 </div>
 
                 <!-- Details -->
                 <div>
-                    <label data-i18n-key="details_label" for="details" class="block text-sm font-bold text-gray-700 mb-1">DETAILS (Time, Price, Specifics):</label>
-                    <textarea id="details" rows="3" placeholder="Available 8 AM - 5 PM on weekdays. Small SUV size. Contact with an offer." required class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-primary focus:border-primary transition"></textarea>
+                    <label data-i18n-key="details_label" for="details" class="block text-sm font-extrabold text-secondary mb-1 uppercase tracking-wider">DETAILS (TIME, PRICE, SPECIFICS):</label>
+                    <textarea id="details" rows="3" placeholder="AVAILABLE 8 AM - 5 PM. SMALL SUV SIZE. CONTACT WITH AN OFFER." required class="w-full p-3 border-2 border-secondary rounded-lg focus:ring-primary focus:border-primary transition font-medium uppercase"></textarea>
                 </div>
 
                 <!-- Button uses the new primary color (Red) and is extremely bold -->
-                <button data-i18n-key="post_button" type="submit" class="w-full bg-primary hover:bg-red-700 text-white font-extrabold uppercase text-lg py-4 px-4 rounded-lg transition duration-200 shadow-xl tracking-wider">
+                <button data-i18n-key="post_button" type="submit" class="w-full bg-primary hover:bg-red-700 text-white font-extrabold uppercase text-xl py-4 px-4 rounded-lg transition duration-200 shadow-xl tracking-widest border-4 border-white">
                     POST NOW
                 </button>
             </form>
         </div>
         
         <!-- Filter & Search Controls -->
-        <div class="bg-card shadow-lg rounded-xl p-4 mb-8 border border-gray-200 flex flex-col md:flex-row gap-4 items-center">
+        <div class="bg-card shadow-lg rounded-xl p-4 mb-8 border-2 border-secondary flex flex-col md:flex-row gap-4 items-center">
             <div class="flex-1 w-full md:w-auto">
                 <label for="search-input" class="sr-only" data-i18n-key="search_placeholder"></label>
                 <div class="relative">
                     <!-- Search Icon (Magnifying Glass) -->
-                    <svg class="w-5 h-5 text-gray-600 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" id="search-input" placeholder="SEARCH LOCATION" class="w-full p-3 pl-10 border border-gray-400 rounded-lg focus:ring-primary focus:border-primary transition uppercase font-semibold">
+                    <svg class="w-5 h-5 text-secondary absolute top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="search-input" placeholder="SEARCH LOCATION" class="w-full p-3 pl-10 border border-secondary rounded-lg focus:ring-primary focus:border-primary transition uppercase font-extrabold">
                 </div>
             </div>
             
             <div class="flex-shrink-0 w-full md:w-auto">
                 <label for="type-filter" class="sr-only"></label>
-                <select id="type-filter" class="w-full p-3 border border-gray-400 rounded-lg bg-white focus:ring-primary focus:border-primary appearance-none font-semibold">
+                <select id="type-filter" class="w-full p-3 border border-secondary rounded-lg bg-card text-secondary focus:ring-primary focus:border-primary appearance-none font-extrabold uppercase tracking-wide">
                     <option value="all" data-i18n-key="show_all_listings">SHOW ALL LISTINGS</option>
                     <option value="offer" data-i18n-key="only_offers">ONLY PARKING OFFERS</option>
                     <option value="request" data-i18n-key="only_requests">ONLY PARKING REQUESTS</option>
@@ -130,11 +162,11 @@
 
         <!-- Posts List -->
         <div class="space-y-6">
-            <h2 data-i18n-key="all_posts_header" class="text-2xl font-bold text-gray-700">ALL POSTS</h2>
+            <h2 data-i18n-key="all_posts_header" class="text-2xl font-extrabold text-secondary uppercase tracking-wider">ALL POSTS</h2>
             <div id="posts-container" class="space-y-6">
                 <!-- Posts will be injected here -->
             </div>
-            <p data-i18n-key="no_posts" id="no-posts" class="text-center text-gray-500 p-8 border border-dashed rounded-xl bg-white hidden">NO LISTINGS AVAILABLE YET. BE THE FIRST TO POST!</p>
+            <p data-i18n-key="no_posts" id="no-posts" class="text-center text-primary font-extrabold p-8 border-4 border-dashed border-primary rounded-xl bg-red-50 hidden uppercase tracking-wider">NO LISTINGS AVAILABLE YET. BE THE FIRST TO POST!</p>
         </div>
 
     </div>
@@ -162,6 +194,7 @@
         let currentFilter = 'all'; // 'all', 'offer', or 'request'
         let currentSearchTerm = '';
         let currentLang = 'en'; // Default language
+        let currentDisplayName = null; // New state for user's chosen name
 
         // --- TRANSLATION OBJECT ---
         const translations = {
@@ -169,15 +202,15 @@
                 'title': 'GARAGIE',
                 'subtitle': 'Find Your Spot, Fast.',
                 'loading': 'Connecting to the network...',
-                'auth_info_prefix': 'YOUR USER ID:',
-                'auth_info_suffix': '(Use this exact ID when someone asks you to connect for a spot!)',
+                'auth_info_prefix': 'USER ID:',
+                'auth_info_suffix': '(USE THIS ID TO CONNECT WITH OTHERS.)',
                 'create_header': 'CREATE NEW LISTING',
-                'offer_label': 'I have a spot to **OFFER**',
-                'request_label': 'I **NEED** a parking spot',
+                'offer_label': 'I HAVE A SPOT TO **OFFER**',
+                'request_label': 'I **NEED** A PARKING SPOT',
                 'location_label': 'LOCATION:',
-                'location_placeholder': 'Be specific for searchability',
-                'details_label': 'DETAILS (Time, Price, Specifics):',
-                'details_placeholder': 'Available 8 AM - 5 PM on weekdays. Small SUV size. Contact with an offer.',
+                'location_placeholder': 'BE SPECIFIC FOR SEARCHABILITY',
+                'details_label': 'DETAILS (TIME, PRICE, SPECIFICS):',
+                'details_placeholder': 'AVAILABLE 8 AM - 5 PM. SMALL SUV SIZE. CONTACT WITH AN OFFER.',
                 'post_button': 'POST NOW',
                 'search_placeholder': 'SEARCH LOCATION',
                 'show_all_listings': 'SHOW ALL LISTINGS',
@@ -185,27 +218,32 @@
                 'only_requests': 'ONLY PARKING REQUESTS',
                 'all_posts_header': 'ALL POSTS',
                 'no_posts': 'NO LISTINGS AVAILABLE YET. BE THE FIRST TO POST!',
-                'poster_id': 'POSTER ID:',
-                'comments_header': 'Comments',
-                'comment_placeholder': 'Add a comment...',
-                'send_button': 'Send',
-                'delete_ad_button': 'DELETE AD',
+                // New/Updated Keys
+                'display_name_label': 'SET YOUR DISPLAY NAME TO POST:',
+                'display_name_placeholder': 'E.G., JEDDAHSPOTFINDER, ABDULAZIZ K.',
+                'set_name_button': 'SET NAME',
+                'name_set_message': 'POSTING AS:',
+                'poster_id': 'POSTER:', 
                 'post_type_offer': 'PARKING OFFER',
                 'post_type_request': 'PARKING REQUEST',
+                'comment_placeholder': 'TYPE YOUR MESSAGE HERE...',
+                'send_button': 'SEND',
+                'delete_ad_button': 'DELETE AD',
+                'comments_header': 'CONTACTS / COMMENTS',
             },
             'ar': {
                 'title': 'جراجي', 
                 'subtitle': 'ابحث عن مكانك بسرعة.', 
                 'loading': 'جاري الاتصال بالشبكة...', 
-                'auth_info_prefix': 'رقم تعريف المستخدم الخاص بك:', 
-                'auth_info_suffix': '(استخدم هذا المعرف بالضبط عندما يطلب منك شخص ما التواصل بشأن موقف!)', 
+                'auth_info_prefix': 'رقم تعريف المستخدم:', 
+                'auth_info_suffix': '(استخدم هذا المعرف للتواصل مع الآخرين.)', 
                 'create_header': 'إنشاء إعلان جديد', 
                 'offer_label': 'لدي موقف **متاح**', 
                 'request_label': 'أنا **أحتاج** إلى موقف', 
                 'location_label': 'الموقع:', 
                 'location_placeholder': 'كن محددًا لسهولة البحث', 
                 'details_label': 'التفاصيل (الوقت، السعر، المواصفات):', 
-                'details_placeholder': 'متاح من 8 صباحًا حتى 5 مساءً في أيام الأسبوع. حجم سيارة دفع رباعي صغيرة. تواصل لتقديم عرض.', 
+                'details_placeholder': 'متاح من 8 صباحًا حتى 5 مساءً. حجم سيارة دفع رباعي صغيرة. تواصل لتقديم عرض.', 
                 'post_button': 'نشر الآن', 
                 'search_placeholder': 'البحث عن موقع', 
                 'show_all_listings': 'عرض جميع الإعلانات', 
@@ -213,13 +251,18 @@
                 'only_requests': 'طلبات المواقف فقط', 
                 'all_posts_header': 'جميع الإعلانات', 
                 'no_posts': 'لا توجد إعلانات متاحة بعد. كن أول من ينشر!', 
-                'poster_id': 'معرف الناشر:', 
-                'comments_header': 'التعليقات', 
-                'comment_placeholder': 'أضف تعليقًا...', 
-                'send_button': 'إرسال', 
-                'delete_ad_button': 'حذف الإعلان', 
-                'post_type_offer': 'عرض موقف', 
-                'post_type_request': 'طلب موقف', 
+                // New/Updated Keys
+                'display_name_label': 'حدد اسم العرض الخاص بك للنشر:',
+                'display_name_placeholder': 'مثال: باحث_مواقف_جدة، عبدالعزيز ك.',
+                'set_name_button': 'تحديد الاسم',
+                'name_set_message': 'النشر باسم:',
+                'poster_id': 'الناشر:', 
+                'post_type_offer': 'عرض موقف',
+                'post_type_request': 'طلب موقف',
+                'comment_placeholder': 'اكتب رسالتك هنا...',
+                'send_button': 'إرسال',
+                'delete_ad_button': 'حذف الإعلان',
+                'comments_header': 'جهات الاتصال / التعليقات',
             }
         };
 
@@ -231,12 +274,31 @@
         const typeFilter = document.getElementById('type-filter');
         const searchInput = document.getElementById('search-input');
         const langSwitcher = document.getElementById('lang-switcher');
+        const nameSetterForm = document.getElementById('name-setter-form');
+        const currentNameDisplayContainer = document.getElementById('current-name-display-container');
+        const currentNameDisplay = document.getElementById('current-name-display');
+        const displayNameInput = document.getElementById('display-name-input');
+        const nameSetterSection = document.getElementById('name-setter-section');
 
 
         // Helper function for UI updates
         const showLoading = (show) => {
             loadingIndicator.classList.toggle('hidden', !show);
             document.getElementById('post-form').classList.toggle('opacity-50', show);
+        };
+        
+        // Custom 'alert' function to avoid window.alert() - Styled in Primary/Secondary
+        const customAlert = (message) => {
+            // Find or create a temporary modal/message box
+            const alertBox = document.createElement('div');
+            alertBox.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm';
+            alertBox.innerHTML = `
+                <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm mx-4 border-t-8 border-primary text-center">
+                    <p class="font-extrabold text-secondary uppercase mb-4 tracking-wider">${message}</p>
+                    <button class="w-full bg-primary text-white py-3 rounded-lg font-extrabold hover:bg-red-700 transition uppercase tracking-wider" onclick="this.parentElement.parentElement.remove()">OK, GOT IT</button>
+                </div>
+            `;
+            document.body.appendChild(alertBox);
         };
 
         /**
@@ -262,7 +324,7 @@
                 let text = t[key] || el.textContent;
 
                 // Special handling for labels that contain bold markdown
-                if ((key.includes('_label') || key === 'title') && text.includes('**')) {
+                if ((key.includes('_label') || key === 'title' || key === 'subtitle' || key === 'offer_label' || key === 'request_label') && text.includes('**')) {
                     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
                     el.innerHTML = text;
                 } else if (key === 'title') {
@@ -278,14 +340,21 @@
             document.getElementById('location').placeholder = t['location_placeholder'];
             document.getElementById('details').placeholder = t['details_placeholder'];
             document.getElementById('search-input').placeholder = t['search_placeholder'];
-            // Update any comment input placeholder if it exists on the page
+            document.getElementById('display-name-input').placeholder = t['display_name_placeholder']; // New
+            
             document.querySelectorAll('.comment-input').forEach(input => {
                 input.placeholder = t['comment_placeholder'];
             });
 
 
             // 4. Update Auth Info (special case)
-            if (userId) {
+            if (userId && currentDisplayName) { // Updated logic
+                authInfo.innerHTML = `<span class="text-secondary font-extrabold uppercase">${t['name_set_message']}</span> <span class="text-primary font-extrabold">${currentDisplayName}</span>. <span class="text-xs text-gray-500 font-mono">(${t['auth_info_prefix']} ${userId} ${t['auth_info_suffix']})</span>`;
+                
+                // Also update the name display section if it's set
+                 currentNameDisplay.innerHTML = `<span class="font-extrabold text-primary">${t['name_set_message']}</span> <span class="text-secondary">${currentDisplayName}</span>`;
+            } else if (userId) {
+                // Display the raw User ID only if the name hasn't been set yet (only for debug/contact)
                 authInfo.textContent = `${t['auth_info_prefix']} ${userId} ${t['auth_info_suffix']}`;
             }
 
@@ -379,7 +448,7 @@
             posts.forEach(post => {
                 const isOffer = post.type === 'offer';
                 // Stop-Sign Style: White card with thick left border and bold badge
-                const cardColor = 'bg-card border-l-8';
+                const cardColor = 'bg-card shadow-xl';
                 const borderColor = isOffer ? 'border-primary' : 'border-secondary';
                 
                 // Dynamic translated texts
@@ -389,31 +458,39 @@
                 const commentsHeader = t['comments_header'];
                 const sendButtonText = t['send_button'];
 
+                // Use displayName, fallback to userId if missing
+                const postDisplayName = (post.displayName || post.userId).toUpperCase();
+
 
                 const typeBadgeBg = isOffer ? 'bg-primary' : 'bg-secondary';
                 
                 const postElement = document.createElement('div');
-                postElement.className = `p-5 rounded-xl shadow-xl transition-shadow hover:shadow-2xl ${cardColor} ${borderColor}`;
+                postElement.className = `p-5 rounded-xl transition-shadow hover:shadow-2xl ${cardColor} border-l-8 ${borderColor}`;
                 
                 // Construct the HTML for the comments, including the delete button if user is the comment poster
                 const commentsHtml = (post.comments || [])
-                    .sort((a, b) => a.timestamp.seconds - b.timestamp.seconds)
-                    .map((comment, index) => `
-                        <div class="p-2 bg-gray-200 rounded-lg text-sm flex justify-between items-start">
+                    .sort((a, b) => (a.timestamp && b.timestamp) ? a.timestamp.seconds - b.timestamp.seconds : 0)
+                    .map((comment, index) => {
+                        // Use displayName, fallback to userId
+                        const commentAuthor = (comment.displayName || comment.userId).toUpperCase();
+
+                        return `
+                        <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start border border-gray-300">
                             <div class="flex-1 min-w-0">
-                                <span class="font-bold text-gray-800 break-all">${comment.userId}:</span>
-                                <span class="text-gray-700">${comment.text}</span>
+                                <span class="font-extrabold ${isOffer ? 'text-primary' : 'text-secondary'} break-all uppercase">${commentAuthor}:</span>
+                                <span class="text-gray-700 font-medium">${comment.text}</span>
                             </div>
                             ${comment.userId === userId ? `
                                 <button class="delete-comment-btn text-red-500 hover:text-red-700 ml-2 leading-none flex-shrink-0" data-post-id="${post.id}" data-comment-index="${index}" style="${currentLang === 'ar' ? 'margin-right: 0.5rem;' : 'margin-left: 0.5rem;'}">
                                     <!-- SVG Trash Icon -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m-5 0h12" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 0 00-1 1v3m-5 0h12" />
                                     </svg>
                                 </button>
                             ` : ''}
                         </div>
-                    `).join('');
+                        `;
+                    }).join('');
 
                 
                 const postHtml = `
@@ -423,32 +500,35 @@
                             ${typeText}
                         </span>
                         <div class="flex items-center space-x-3">
-                            <span class="text-sm text-gray-500">${new Date(post.timestamp.seconds * 1000).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')}</span>
+                            <span class="text-sm text-gray-500 font-mono">${new Date(post.timestamp.seconds * 1000).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')}</span>
                             <!-- Delete Ad Button (only visible to the post creator) -->
                             ${post.userId === userId ? `
-                                <button class="delete-post-btn text-xs font-bold text-white bg-red-500 hover:bg-red-700 p-1 px-2 rounded-lg transition" data-post-id="${post.id}">${deleteAdButtonText}</button>
+                                <button class="delete-post-btn text-xs font-bold text-white bg-red-500 hover:bg-red-700 p-1 px-2 rounded-lg transition uppercase tracking-wider" data-post-id="${post.id}">${deleteAdButtonText}</button>
                             ` : ''}
                         </div>
                     </div>
                     
-                    <h3 class="text-2xl font-extrabold text-gray-800 mb-2 uppercase">${post.location}</h3>
-                    <p class="text-gray-600 mb-4 whitespace-pre-wrap">${post.details}</p>
-                    <div class="text-sm text-gray-500 border-t border-gray-200 pt-3">
-                        ${posterIdLabel} <span class="font-mono text-gray-800 font-semibold break-all">${post.userId}</span>
+                    <h3 class="text-3xl font-extrabold text-secondary mb-2 uppercase tracking-tight">${post.location}</h3>
+                    <p class="text-gray-700 mb-4 whitespace-pre-wrap font-medium">${post.details}</p>
+                    <div class="text-sm text-gray-500 border-t border-gray-200 pt-3 flex justify-between items-center">
+                        <div>
+                            <span class="font-extrabold text-secondary uppercase tracking-wider">${posterIdLabel}</span> 
+                            <span class="font-mono text-primary font-extrabold break-all">${postDisplayName}</span>
+                        </div>
                     </div>
 
                     <!-- Comments Section -->
                     <div class="mt-4 pt-4 border-t border-gray-200">
-                        <h4 class="font-semibold text-gray-700 mb-3 uppercase">${commentsHeader} (${(post.comments || []).length})</h4>
+                        <h4 class="font-extrabold text-secondary mb-3 uppercase tracking-wider">${commentsHeader} (${(post.comments || []).length})</h4>
                         <div class="space-y-2 max-h-40 overflow-y-auto pr-2">
                             ${commentsHtml}
                         </div>
                         
                         <!-- Comment Form -->
-                        <form class="comment-form mt-3 flex space-x-2" data-post-id="${post.id}">
-                            <input type="text" placeholder="${t['comment_placeholder']}" required class="comment-input flex-grow p-2 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary">
+                        <form class="comment-form mt-3 flex gap-2" data-post-id="${post.id}">
+                            <input type="text" placeholder="${t['comment_placeholder']}" required class="comment-input flex-grow p-2 border-2 border-secondary rounded-lg text-sm focus:ring-primary focus:border-primary font-medium uppercase">
                             <!-- Button uses secondary color (dark gray) for comment submission -->
-                            <button type="submit" class="bg-secondary hover:bg-gray-900 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 uppercase font-bold">
+                            <button type="submit" class="bg-secondary hover:bg-gray-900 text-white text-sm font-extrabold py-2 px-4 rounded-lg transition duration-200 uppercase tracking-wider flex-shrink-0">
                                 ${sendButtonText}
                             </button>
                         </form>
@@ -462,11 +542,13 @@
             
             // 1. Attach listeners for comment forms
             document.querySelectorAll('.comment-form').forEach(form => {
+                form.removeEventListener('submit', handleCommentSubmission); // Prevent double-binding
                 form.addEventListener('submit', handleCommentSubmission);
             });
             
             // 2. Attach listeners for post deletion buttons
             document.querySelectorAll('.delete-post-btn').forEach(button => {
+                button.removeEventListener('click', deletePost);
                 button.addEventListener('click', (e) => {
                     const postId = e.target.getAttribute('data-post-id');
                     deletePost(postId);
@@ -475,8 +557,8 @@
 
             // 3. Attach listeners for comment deletion buttons
             document.querySelectorAll('.delete-comment-btn').forEach(button => {
+                button.removeEventListener('click', deleteComment);
                 button.addEventListener('click', (e) => {
-                    // Find the closest element with the post ID, handles the SVG being the target
                     const postId = e.currentTarget.getAttribute('data-post-id');
                     const commentIndex = parseInt(e.currentTarget.getAttribute('data-comment-index'));
                     deleteComment(postId, commentIndex);
@@ -572,6 +654,13 @@
          */
         postForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            // Check if display name is set
+            if (!currentDisplayName) {
+                const t = translations[currentLang];
+                customAlert(`ERROR: YOU MUST FIRST ${t['display_name_label']}`);
+                displayNameInput.focus();
+                return; 
+            }
             if (!isAuthReady || !userId) return;
 
             showLoading(true);
@@ -584,7 +673,8 @@
                 type: type,
                 location: location,
                 details: details,
-                userId: userId,
+                userId: userId, // Keep userId for internal security/deletion logic
+                displayName: currentDisplayName, // New: Display Name
                 timestamp: serverTimestamp(),
                 comments: [], // Initialize comments array
             };
@@ -605,6 +695,13 @@
          */
         const handleCommentSubmission = async (e) => {
             e.preventDefault();
+            // Check if display name is set
+            if (!currentDisplayName) {
+                const t = translations[currentLang];
+                customAlert(`ERROR: YOU MUST FIRST ${t['display_name_label']}`);
+                displayNameInput.focus();
+                return;
+            }
             if (!isAuthReady || !userId) return;
 
             const form = e.target;
@@ -615,7 +712,8 @@
             if (!commentText) return;
 
             const newComment = {
-                userId: userId,
+                userId: userId, // Keep userId for internal security/deletion logic
+                displayName: currentDisplayName, // New: Display Name
                 text: commentText,
                 timestamp: serverTimestamp() 
             };
@@ -632,6 +730,31 @@
             }
         };
 
+        // --- 5. NAME SETTER LOGIC ---
+        
+        nameSetterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newName = displayNameInput.value.trim();
+            if (newName.length > 0) {
+                currentDisplayName = newName;
+                const t = translations[currentLang];
+                
+                // Update visibility and text
+                currentNameDisplay.innerHTML = `<span class="font-extrabold text-primary uppercase">${t['name_set_message']}</span> <span class="text-secondary">${currentDisplayName.toUpperCase()}</span>`;
+                currentNameDisplayContainer.classList.remove('hidden');
+                
+                nameSetterForm.classList.add('hidden');
+                nameSetterSection.classList.remove('border-secondary');
+                nameSetterSection.classList.add('border-primary', 'bg-red-50');
+                
+                // Update main auth info with the new name and hide the raw User ID prompt
+                authInfo.innerHTML = `<span class="text-secondary font-extrabold uppercase">${t['name_set_message']}</span> <span class="text-primary font-extrabold">${currentDisplayName}</span>. <span class="text-xs text-gray-500 font-mono">(${t['auth_info_prefix']} ${userId} ${t['auth_info_suffix']})</span>`;
+            } else {
+                const t = translations[currentLang];
+                customAlert(`ERROR: ${t['display_name_label']}`);
+            }
+        });
+
         /**
          * Handles the language switch button click.
          */
@@ -646,3 +769,4 @@
     </script>
 </body>
 </html>
+
